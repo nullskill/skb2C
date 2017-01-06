@@ -1,4 +1,4 @@
-function hello(name) {
-  console.log(`Hello ${name}`); // eslint-disable-line
-}
-hello('JS World');
+import Greeting from './Greeting/Greeting';
+
+const tester = new Greeting('Tester');
+tester.hello()

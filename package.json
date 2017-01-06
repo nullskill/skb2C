@@ -49,8 +49,9 @@
     "mocha": "^3.1.2",
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.6.1",
-    "nodemon": "^1.11.0",
-    "sinon": "^2.0.0-pre.3"
+    "sinon": "^2.0.0-pre.3",
+    "in-publish": "2.0.0"
+
   },
   "scripts": {
     "lint": "eslint src test tools",
@@ -58,10 +59,16 @@
     "test:watch": "mocha --compilers js:babel-register --reporter min --watch",
     "test:cover": "babel-node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "build": "node tools/build",
-    "prepublish": "npm run build",
+    "kriasoft-build": "node tools/build",
+
     "publish:docs": "easystatic deploy docs --repo kriasoft/babel-starter-kit",
-    "dev": "nodemon --exec babel-node -- src/index.js",
+
+    "babel-build": "babel src --out-dir dist --source-maps inline --copy-files",
+    "build": "npm run babel-build && npm run kriasoft-build",
+
+    "dev": "npm run kriasoft-build && npm run babel-build -- --watch",
+
+    "prepublish": "in-publish && npm run build || echo 'Have any questions? ask @isuvorov :)'",
     "start": "easystatic start docs"
   }
 }

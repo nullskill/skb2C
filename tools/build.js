@@ -8,12 +8,12 @@
  */
 
 'use strict';
-
 const fs = require('fs');
 const del = require('del');
 const rollup = require('rollup');
 const babel = require('rollup-plugin-babel');
 const pkg = require('../package.json');
+const config = require('./config');
 
 let promise = Promise.resolve();
 
@@ -21,7 +21,7 @@ let promise = Promise.resolve();
 promise = promise.then(() => del(['dist/*']));
 
 // Compile source code into a distributable format with Babel
-for (const format of ['es6', 'cjs', 'umd']) {
+for (const format of config.formats) {
   promise = promise.then(() => rollup.rollup({
     entry: 'src/index.js',
     external: Object.keys(pkg.dependencies),
