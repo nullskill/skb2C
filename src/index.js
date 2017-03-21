@@ -14,22 +14,26 @@ const app = express();
 
 app.use(cors());
 
+app.get('/', (req, res) => {
+  res.send('hello');
+});
+
 app.get('/colors', (req, res) => {
 
   if (!req.query.color) {
-    res.send('Invalid color');
+    return res.send('Invalid color');
   }
 
-  var color = decodeURI(req.query.color).trim();
+  var color = decodeURI(req.query.color).replace(/\s/g, '');
 
-  console.log(color);
-
-  if (color.charAt(0) == "#") {
+  if (color.substring(0, 4) == "#rgb") {
+    return res.send('Invalid color');
+  } else if (color.charAt(0) == "#") {
     color = color.slice(1);
   }
 
   var Reg;
-  const reRGB = /rgb\((\d{1,3}),\s?(\d{1,3}),\s?(\d{1,3})\)/;
+  const reRGB = /rgb\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/;
   const reHex = /^[0-9a-f]{3,6}$/i;
 
   Reg = new RegExp(reRGB);
@@ -43,8 +47,6 @@ app.get('/colors', (req, res) => {
   }
 
   res.send('Invalid color');
-
-  // console.log(color);
 });
 
 app.get('/creds', (req, res) => {
@@ -86,29 +88,6 @@ app.get('/creds', (req, res) => {
 });
 
 app.get('/calc', (req, res) => {
-  // var a, b;
-
-  // if (!req.query.a) {
-  //   a = 0;
-  // } else {
-  //   try {
-  //     a = Number(req.query.a);
-  //   } catch(e) {
-  //     a = 0;
-  //   }
-  // }
-
-  // if (!req.query.b) {
-  //   b = 0;
-  // } else {
-  //   try {
-  //     b = Number(req.query.b);
-  //   } catch(e) {
-  //     b = 0;
-  //   }
-  // }
-
-  // const sum = a + b;
 
   const sum = (+req.query.a || 0) + (+req.query.b || 0);
 
@@ -123,11 +102,6 @@ app.get('/canonize', (req, res) => {
   const username = canonize(req.query.username);
 
   res.send(username);
-
-  // res.json({
-  //   url: req.query.username,
-  //   username
-  // });
 });
 
 const baseUrl = 'http://pokeapi.co/api/v2';
@@ -163,7 +137,7 @@ async function getPokemon(url) {
   return pokemon;
 }
 
-app.get('/', async (req, res) => {
+app.get('/pokemon', async (req, res) => {
   try {
     const pokemonsUrl = `${baseUrl}/pokemon`;
     const pokemonsInfo = await getPokemons(pokemonsUrl);

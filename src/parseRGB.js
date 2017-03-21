@@ -15,9 +15,18 @@ function rgb2hex(reds, greens, blues) {
 export default function parseRGB(color, reg) {
   
   const rgb = color.match(reg);
-  // console.log(rgb);
+  console.log(rgb);
+  console.log(`${+rgb[1]}`, `${+rgb[2]}`, `${+rgb[3]}`);
 
-  return rgb2hex(+rgb[0], +rgb[1], +rgb[2]);
+  const r = +rgb[1];
+  const g = +rgb[2];
+  const b = +rgb[3];
+
+  if (r > 255 || g > 255 || b > 255) {
+    return 'Invalid color';
+  }
+
+  return rgb2hex(r, g, b);
   // return rgbToHex(+rgb[0], +rgb[1], +rgb[2]);
 
   return 'RGB color';
