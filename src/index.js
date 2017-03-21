@@ -12,6 +12,44 @@ const app = express();
 
 app.use(cors());
 
+app.get('/creds', (req, res) => {
+
+  var result = 'Invalid fullname';
+
+  if (!req.query.fullname) {
+    return res.send(result);
+  }
+  
+  const fullname = req.query.fullname;
+
+  // const re = /^([a-zа-яё\s]+)$/i;
+  const re = /[0-9-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/;
+  const Reg = new RegExp(re);
+
+  if (Reg.test(fullname)) {
+    return res.send(result);
+  }
+
+  const arr = fullname.split(' ');
+
+  switch(arr.length) {
+    case 3:
+      result = arr[2] + ' ' + arr[0].charAt(0) + '.' + ' ' + arr[1].charAt(0) + '.';
+      return res.send(result);
+      break;
+    case 2:
+      result = arr[1] + ' ' + arr[0].charAt(0) + '.';
+      return res.send(result);
+      break;
+    case 1:
+      result = arr[0];
+      return res.send(result);
+      break;
+    default:
+      return res.send(result);
+  }
+});
+
 app.get('/calc', (req, res) => {
   var a, b;
 
