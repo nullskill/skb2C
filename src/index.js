@@ -4,6 +4,8 @@ import fetch from 'isomorphic-fetch';
 import Promise from 'bluebird';
 import _ from 'lodash';
 
+import parseRGB from './parseRGB';
+import parseHex from './parseHex';
 import canonize from './canonize';
 
 const __DEV__ = true;
@@ -11,6 +13,39 @@ const __DEV__ = true;
 const app = express();
 
 app.use(cors());
+
+app.get('/colors', (req, res) => {
+
+  if (!req.query.color) {
+    res.send('Invalid color');
+  }
+
+  var color = decodeURI(req.query.color).trim();
+
+  console.log(color);
+
+  if (color.charAt(0) == "#") {
+    color = color.slice(1);
+  }
+
+  var Reg;
+  const reRGB = /rgb\((\d{1,3}),\s?(\d{1,3}),\s?(\d{1,3})\)/;
+  const reHex = /^[0-9a-f]{3,6}$/i;
+
+  Reg = new RegExp(reRGB);
+  if (Reg.test(color)) {
+    return res.send(parseRGB(color, Reg));
+  }
+
+  Reg = new RegExp(reHex);
+  if (Reg.test(color)) {
+    return res.send(parseHex(color));
+  }
+
+  res.send('Invalid color');
+
+  // console.log(color);
+});
 
 app.get('/creds', (req, res) => {
 
@@ -20,7 +55,7 @@ app.get('/creds', (req, res) => {
     return res.send(result);
   }
   
-  const fullname = req.query.fullname;
+  const fullname = req.query.fullname.trim();
 
   // const re = /^([a-zа-яё\s]+)$/i;
   const re = /[0-9-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/;
@@ -51,29 +86,31 @@ app.get('/creds', (req, res) => {
 });
 
 app.get('/calc', (req, res) => {
-  var a, b;
+  // var a, b;
 
-  if (!req.query.a) {
-    a = 0;
-  } else {
-    try {
-      a = Number(req.query.a);
-    } catch(e) {
-      a = 0;
-    }
-  }
+  // if (!req.query.a) {
+  //   a = 0;
+  // } else {
+  //   try {
+  //     a = Number(req.query.a);
+  //   } catch(e) {
+  //     a = 0;
+  //   }
+  // }
 
-  if (!req.query.b) {
-    b = 0;
-  } else {
-    try {
-      b = Number(req.query.b);
-    } catch(e) {
-      b = 0;
-    }
-  }
+  // if (!req.query.b) {
+  //   b = 0;
+  // } else {
+  //   try {
+  //     b = Number(req.query.b);
+  //   } catch(e) {
+  //     b = 0;
+  //   }
+  // }
 
-  const sum = a + b;
+  // const sum = a + b;
+
+  const sum = (+req.query.a || 0) + (+req.query.b || 0);
 
   res.send(sum.toString());
 });
